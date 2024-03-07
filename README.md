@@ -44,7 +44,7 @@ To integrate this GitHub Action into your workflow, follow the steps below:
               git diff origin/main HEAD > changes
           - name: Run iam/role policy changes check
             id: review_pr
-            uses: ministryofjustice/github-actions/iam-role-policy-changes-check@main
+            uses: ministryofjustice/cloud-platform-iam-policy-github-action@main
           - name: Request changes in the PR
             uses: andrewmusgrave/automatic-pull-request-review@0.0.5
             if: steps.review_pr.outputs.review_pr_iam_check == 'false'
