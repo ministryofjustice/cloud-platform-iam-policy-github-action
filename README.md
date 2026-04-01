@@ -6,7 +6,7 @@ This GitHub Action is designed to identify and flag any pull requests within the
 
 ## Overview
 
-This action automatically marks pull requests containing IAM role and policy changes as failed, signalling the need for a review by authorised team members. This process helps maintain the integrity and security of the IAM policies within the Cloud Platform.
+This action automatically marks pull requests containing IAM role and policy changes as failed, signalling the need for a review by authorised team members. This process helps maintain the integrity and security of the IAM policies within the Cloud Platform. 
 
 ## How to Use
 
@@ -25,7 +25,12 @@ To integrate this GitHub Action into your workflow, follow the steps below:
     env:
       PR_OWNER: ${{ github.event.pull_request.user.login }}
       GITHUB_OAUTH_TOKEN: ${{ secrets.DOCUMENT_REVIEW_GITHUB }}
-
+      PR_NUMBER: ${{ github.event.number }}
+      GITHUB_REPOSITORY: ${{ github.repository }}
+      GITHUB_APP_ID: ${{ secrets.GITHUB_APP_ID }}
+      GITHUB_APP_INSTALLATION_ID: ${{ secrets.GITHUB_APP_INSTALLATION_ID }}
+      GITHUB_APP_PRIVATE_KEY: ${{ secrets.GITHUB_APP_PRIVATE_KEY }} 
+  
     jobs:
       check-diff:
         runs-on: ${{ matrix.os }}
@@ -36,7 +41,7 @@ To integrate this GitHub Action into your workflow, follow the steps below:
 
         steps:
           - name: Checkout PR code
-            uses: actions/checkout@v3
+            uses: actions/checkout@<SHA>
           - run: |
               git fetch --no-tags --prune --depth=1 origin +refs/heads/*:refs/remotes/origin/*
           - name: Run git diff against repository
@@ -44,15 +49,7 @@ To integrate this GitHub Action into your workflow, follow the steps below:
               git diff origin/main HEAD > changes
           - name: Run iam/role policy changes check
             id: review_pr
-            uses: ministryofjustice/cloud-platform-iam-policy-github-action@main
-          - name: Request changes in the PR
-            uses: andrewmusgrave/automatic-pull-request-review@0.0.5
-            if: steps.review_pr.outputs.review_pr_iam_check == 'false'
-            with:
-              repo-token: "${{ secrets.GITHUB_TOKEN }}"
-              event: COMMENT
-              body: |
-                There are potential IAM Role and/or policy Changes/additions. Reviewer - If satisfied with the changes/additions - dismiss this request
+            uses: ministryofjustice/cloud-platform-iam-policy-github-action@<SHA>
     ```
 
 3. **Provide Required Secret:** Ensure the `secrets.DOCUMENT_REVIEW_GITHUB` secret is set in your repository's settings to allow the action to operate correctly.
