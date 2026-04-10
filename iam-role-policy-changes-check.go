@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -107,7 +108,10 @@ func main() {
 		if err != nil {
 			log.Fatalf("Invalid pull request number: %v", err)
 		}
-		_, _, err = client.PullRequests.CreateReview(ctx, "ministryofjustice", os.Getenv("GITHUB_REPOSITORY"), prNumber, review)
+
+		parts := strings.SplitN(os.Getenv("GITHUB_REPOSITORY"), "/", 2)
+
+		_, _, err = client.PullRequests.CreateReview(ctx, parts[0], parts[1], prNumber, review)
 		if err != nil {
 			log.Fatalf("Error creating review: %v", err)
 		}
